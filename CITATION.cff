@@ -5,7 +5,7 @@ type: dataset
 authors:
   - name: 数字游戏学习研究
 version: 0.1.1
-date-released: 2026-08-14
+date-released: 2026-08-15
 repository-code: https://github.com/minkaiwang/dgbl-wechat-kb
 url: https://github.com/minkaiwang/dgbl-wechat-kb
 license: CC-BY-4.0
