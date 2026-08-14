@@ -8,6 +8,7 @@ strict: true
 
 nav:
   - 首页: index.md
+  - 数据集说明: dataset.md
   - 文章目录: catalog-public.md
   - 构建与审计方法: methodology.md
   - 标签: tags.md

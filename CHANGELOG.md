@@ -11,6 +11,8 @@
 - 微信文章发现、导入、索引、搜索和质量检查脚本；
 - 单元测试、严格 MkDocs 构建和 GitHub Actions CI；
 - MIT 代码许可、CC BY 4.0 元数据/文档许可及明确的公开范围门禁。
+- 可重复生成的 JSONL、CSV、JSON Schema、ZIP 与 SHA256 Release 资产；
+- GitHub README 原创信息图、数据流程图和完整数据字典。
 
 ### Known limitations
 

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.1.0/data/article-metadata.schema.json",
+  "title": "数字游戏学习研究公众号文章公开元数据",
+  "description": "JSONL 文件中单条文章元数据记录的结构；不包含正文、摘要片段或图片。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "article_id",
+    "position",
+    "issue_no",
+    "title",
+    "display_title",
+    "series",
+    "author",
+    "published_at",
+    "source_url",
+    "content_rights",
+    "asset_rights"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "单条记录的结构版本。"
+    },
+    "article_id": {
+      "type": "string",
+      "pattern": "^wx-[0-9]+-[0-9]+$",
+      "description": "由微信消息 ID 与图文序号构成的稳定 ID。"
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "文章在公开合集清单中的连续位置。"
+    },
+    "issue_no": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "从标题中解析的期号；特别篇等无期号文章为 null。"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "微信原文标题。"
+    },
+    "display_title": {
+      "type": ["string", "null"],
+      "description": "去除栏目与期号前缀后的展示标题。"
+    },
+    "series": {
+      "type": ["string", "null"],
+      "description": "从标题前缀解析的原始栏目标签。"
+    },
+    "author": {
+      "type": ["string", "null"],
+      "description": "微信文章页面提供的作者字段。"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "带时区的原始发布时间。"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://mp\\.weixin\\.qq\\.com/s\\?",
+      "description": "用于回到微信原文核验的公开 URL。"
+    },
+    "content_rights": {
+      "type": "string",
+      "const": "pending_owner_review",
+      "description": "对应文章正文的权利状态；不改变元数据本身的 CC BY 4.0 许可。"
+    },
+    "asset_rights": {
+      "type": "string",
+      "const": "pending_review",
+      "description": "对应文章图片与第三方素材的权利状态。"
+    }
+  }
+}

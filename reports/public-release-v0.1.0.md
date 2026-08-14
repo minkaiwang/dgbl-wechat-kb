@@ -5,8 +5,8 @@
 v0.1.0 可按“代码 + 元数据”范围公开。它提供 474 条安全元数据、处理代码、测试和公开审计，
 不提供微信文章正文、摘要片段、图片或私有抓取材料。
 
-用户于 2026-08-14 明确授权推送 `main` 并在发布门禁通过后将
-`minkaiwang/dgbl-wechat-kb` 切换为 Public。GitHub Pages、GitHub Release 和全文发布不在本批次内。
+用户于 2026-08-14 明确授权推送 `main`、将 `minkaiwang/dgbl-wechat-kb` 切换为 Public，
+并在后续确认 v0.1.0 的发布主体为公众号帖子公开元数据集。GitHub Pages 和全文发布不在本批次内。
 
 ## 许可
 
@@ -17,15 +17,25 @@ v0.1.0 可按“代码 + 元数据”范围公开。它提供 474 条安全元�
 ## 自动检查
 
 - Ruff：通过；
-- Pytest：14/14 通过；
+- Pytest：16/16 通过；
 - 公开发布门禁：通过，474 条元数据与 474 条导入状态一致；
 - `CITATION.cff`：通过 CFF 1.2.0 官方 schema 验证；
+- Release 资产：JSONL、CSV、JSON Schema、ZIP 与 SHA256 校验和可重复生成；
+- CSV：474 行、12 个字段通过表格导入、错误扫描与视觉可读性检查；
+- GitHub 说明：原创 SVG 信息图与 Mermaid 数据流程图完成视觉检查；
 - `mkdocs build --strict`：通过；
 - 受限路径：当前发布候选 0 命中；
 - 候选文本中的凭据、个人邮箱和 Windows 用户目录：0 命中；
 - 单文件上限：全部低于 20 MiB。
 
 CI 在 Ubuntu 24.04 上使用锁定依赖复跑同一组检查，并额外扫描所有可达 Git blob 和提交邮箱。
+
+## GitHub Release 范围
+
+- 标签：`v0.1.0`；
+- 标题：`v0.1.0 — 数字游戏学习研究公众号公开元数据集`；
+- 独立下载资产：JSONL、CSV、JSON Schema、完整 ZIP 与 `SHA256SUMS.txt`；
+- 仓库源码附带处理代码、审计报告和 `dgbl-kb` Skill，Skill 不作为独立 Release 产品。
 
 ## 已知边界
 

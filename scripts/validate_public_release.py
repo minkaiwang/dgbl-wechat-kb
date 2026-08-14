@@ -60,9 +60,14 @@ REQUIRED_RELEASE_FILES = {
     "RIGHTS.md",
     "SECURITY.md",
     "data/article-metadata.jsonl",
+    "data/article-metadata.schema.json",
     "data/import-status.jsonl",
+    "docs/assets/readme-overview.svg",
     "docs/catalog-public.md",
+    "docs/dataset.md",
     "reports/public-release-v0.1.0.md",
+    "reports/release-notes-v0.1.0.md",
+    "scripts/build_release_assets.py",
 }
 
 

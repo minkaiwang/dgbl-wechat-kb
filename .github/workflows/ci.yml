@@ -42,6 +42,9 @@ jobs:
       - name: Test
         run: uv run pytest
 
+      - name: Build deterministic release assets
+        run: uv run python scripts/build_release_assets.py --output dist
+
       - name: Validate public boundary and Git history
         run: uv run python scripts/validate_public_release.py --history
 
