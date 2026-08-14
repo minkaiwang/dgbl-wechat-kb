@@ -1,50 +1,66 @@
 # 数字游戏学习研究 · 公众号知识库
 
-本仓库用于整理“数字游戏学习研究”微信公众号公开文章，形成可浏览、可搜索、可供 AI 检索且能回到原文核验的知识库。
+[![CI](https://github.com/minkaiwang/dgbl-wechat-kb/actions/workflows/ci.yml/badge.svg)](https://github.com/minkaiwang/dgbl-wechat-kb/actions/workflows/ci.yml)
 
-> 首发策略：私有仓库的 `main` 只保存代码、审计材料与公开安全元数据。公开合集已发现 474 篇；公众号主页截图显示 486 篇原创内容，差额仍待后台清单或人工核对。正文、摘要片段和图片不进入首发版本。
+这是“数字游戏学习研究”微信公众号的可追溯元数据知识库。公开仓库收录导入与审计代码、
+474 条公开安全元数据、文章目录和质量报告；每条记录均可回到微信原文核验。
 
-## 架构
+## 当前状态
 
-```text
-E:\DGBL-WeChat-KB\
-├─ private-archive\    原始 HTML、原图、接口快照、日志和不确定项，不进入 Git
-└─ public-repo\        清洗后的 Markdown、公开素材、索引、脚本和站点
-```
+- 公开合集：已发现并导入 **474** 个连续位置，文章 ID 与原文 URL 均无重复。
+- 公众号主页截图：显示 **486** 篇原创内容；与公开合集相差 12 篇，仍待后台清单对账。
+- 未决编号：3、94、435；356–364 高度疑似一次性编号跳号；编号 246 有两篇不同文章。
+- 公开范围：代码、元数据、目录、测试和审计材料。
+- 私有范围：474 篇正文、本地全文索引、摘要片段、原始 HTML、原图与抓取快照。
 
-公开仓库以 Markdown 为事实来源：
+完整性口径见 [`reports/completeness-reconciliation.md`](reports/completeness-reconciliation.md)。
 
-- `docs/articles/`：本地按年份保存文章；正文许可确认前由 `.gitignore` 阻止提交。
-- `docs/catalog-public.md`：只含标题、日期、栏目和微信原文链接的公开目录。
-- `data/article-metadata.jsonl`：不含正文与摘要片段的公开安全元数据索引。
-- `data/articles.jsonl`：含本地正文检索片段的完整机器索引，正文许可确认前不进入公开包。
-- `scripts/`：发现、导入、质量检查、索引和检索脚本。
-- `reports/`：批次清单、质量和版权审计。
-- `skills/dgbl-kb/`：项目专用 Agent Skill。
+## 公开边界
 
-## 工作流
+| 内容 | GitHub 状态 | 说明 |
+|---|---|---|
+| `data/article-metadata.jsonl` | 公开 | 标题、日期、栏目、稳定 ID、作者字段与微信原文链接 |
+| `docs/catalog-public.md` | 公开 | 不含正文的可浏览目录 |
+| `data/import-status.jsonl` | 公开 | 导入与自动质量审计状态 |
+| `scripts/`、`tests/` | 公开 | 发现、导入、索引、检索、审计和发布门禁 |
+| `docs/articles/` | 不提交 | 474 篇本地 Markdown 正文 |
+| `data/articles.jsonl`、`docs/llms.txt` | 不提交 | 含正文片段的本地检索索引 |
+| 原始 HTML、图片、接口快照和日志 | 不提交 | 仅保存在维护者的 E 盘私有归档 |
 
-1. 从公众号公开合集取得文章清单，保存原始接口快照。
-2. 逐篇保存原始 HTML 和图片，并生成规范 Markdown。
-3. 对标题、日期、正文、图片和链接进行自动检查及抽样核对。
-4. 将第三方素材标为 `pending_review`，通过版权检查后才进入公开素材目录。
-5. 构建中文全文搜索站点和本地检索入口。
+`.gitignore` 与 `scripts/validate_public_release.py` 对受限路径实施双重门禁。公开仓库不需要
+公众号 AppID、AppSecret、Cookie 或浏览器登录状态。
 
-## 本地命令
+## 公开仓库快速验证
 
 ```powershell
-uv sync --python 3.12 --extra test
-uv run python scripts/discover_album.py --help
-uv run python scripts/import_articles.py --help
-uv run python scripts/archive_images.py --help
-uv run python scripts/build_index.py
-uv run python scripts/build_public_metadata.py
-uv run python scripts/search_kb.py "游戏化学习 动机"
-uv run python scripts/qa_kb.py --help
+git clone https://github.com/minkaiwang/dgbl-wechat-kb.git
+cd dgbl-wechat-kb
+uv sync --frozen --python 3.12 --extra test
+uv run ruff check .
 uv run pytest
+uv run python scripts/validate_public_release.py
 $env:NO_MKDOCS_2_WARNING='true'; uv run mkdocs build --strict
 ```
 
-项目不需要公众号 AppID、AppSecret 或 Cookie。合集原始链接中的 `chksm` 是公开访问校验字段，发现阶段必须保留。不得把任何账号凭据放入本仓库。
+GitHub Actions 在每次 push 和 pull request 上运行同一组检查。公开 clone 可以验证已提交的
+安全元数据；重新抓取、生成正文或构建全文索引需要维护者的私有原始清单。
 
-Camoufox 仅作为可选浏览器回退：`uv sync --extra browser`。正常合集导入不需要下载其浏览器运行时。
+## 目录结构
+
+```text
+data/       公开元数据、导入状态与中文分词词典
+docs/       元数据站点和公开文章目录
+reports/    完整性、质量、权利与发布审计
+scripts/    发现、导入、构建、搜索和发布门禁
+tests/      单元测试
+skills/     项目专用 Codex Agent Skill
+```
+
+## 许可
+
+- 软件代码：根目录 [`LICENSE`](LICENSE) 中的 MIT License。
+- 公开元数据、目录、报告和项目文档：[`DATA-LICENSE.md`](DATA-LICENSE.md) 中的 CC BY 4.0。
+- 微信文章正文、摘要片段、图片和第三方材料：不在上述开放许可范围内，且不进入公开 Git 历史。
+
+引用项目时可使用 [`CITATION.cff`](CITATION.cff)。贡献规则见
+[`CONTRIBUTING.md`](CONTRIBUTING.md)，内容权利边界见 [`RIGHTS.md`](RIGHTS.md)。

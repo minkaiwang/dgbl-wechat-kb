@@ -1,12 +1,13 @@
-# GitHub 建仓信息与发布方案
+# GitHub 仓库与公开发布方案
 
 ## 账号预检
 
 - 仓库所有者：`minkaiwang`
 - 账号主页：<https://github.com/minkaiwang>
 - 本机 GitHub CLI：已登录 `minkaiwang`，Git 协议为 HTTPS。
-- 推荐仓库名 `dgbl-wechat-kb`：截至 2026-08-14，使用已登录账号执行认证查询也未找到同名公开或私有仓库，可用于新建。
-- 发布决策：用户已明确授权首次推送 `main` 到目标私有仓库；未授权启用 Pages、改为公开或发布文章正文与图片。
+- 仓库：`minkaiwang/dgbl-wechat-kb`，默认分支为 `main`。
+- 发布决策：用户已于 2026-08-14 明确授权把“代码 + 474 条安全元数据”版本推进为 Public。
+- 持续排除：文章正文、摘要片段、图片与私有归档；GitHub Pages 和全文发布不在本批次范围内。
 
 ## 建仓字段
 
@@ -15,8 +16,8 @@
 | Owner | `minkaiwang` |
 | Repository name | `dgbl-wechat-kb` |
 | Description | `数字游戏学习研究公众号文章知识库：可追溯元数据、中文检索、质量审计与可复现导入流程。` |
-| Visibility | 先设为 `Private`，完成公开包与许可复核后再改为 `Public` |
-| Initialize repository | README、`.gitignore`、License 均不要勾选，本地已有这些文件 |
+| Visibility | `Public`；仅公开通过门禁的代码与安全元数据 |
+| Initialize repository | 已从本地受审计工作树初始化 |
 | Default branch | `main` |
 | Website | 暂留空；通过发布闸门后再填写 GitHub Pages 地址 |
 
@@ -58,9 +59,10 @@
 
 ## 当前确认状态
 
-1. 用户已创建私有空仓库，并确认继续准备首发版本。
-2. 首发范围固定为代码、测试、审计材料和 474 条公开安全元数据；正文、摘要片段与图片排除。
-3. 文章正文许可仍待后续选择 `CC BY-NC 4.0`、`CC BY 4.0` 或逐篇确认。
-4. 用户已于 2026-08-14 明确确认首次推送 `main` 到 `origin`，并要求保持私有。
+1. 私有仓库初始化和首次 `main` 推送已完成。
+2. v0.1.0 范围固定为代码、测试、审计材料和 474 条公开安全元数据。
+3. 代码采用 MIT；公开元数据和项目文档采用 CC BY 4.0。
+4. 正文、摘要片段与图片继续排除，文章正文许可仍待逐项确认。
+5. 用户已明确授权在 CI、完整历史和隐私门禁通过后将仓库改为 Public。
 
-首次 push 仅同步已审计的首发范围。Pages、改为公开和全文发布仍需后续明确确认。
+GitHub Pages、GitHub Release 和任何全文发布均作为后续独立动作处理。
