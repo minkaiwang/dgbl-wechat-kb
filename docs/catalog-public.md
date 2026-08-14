@@ -1,9 +1,10 @@
 # 公开文章目录
 
-当前收录 **474** 条文章元数据。首发版本只提供标题、日期、栏目和微信原文链接，不包含文章正文或图片。
+当前收录 **475** 条文章元数据。首发版本只提供标题、日期、栏目和微信原文链接，不包含文章正文或图片。
 
 | 日期 | 栏目 | 文章 | 原文 |
 |---|---|---|---|
+| 2026-08-14 | 数字游戏学习 | 研学旅行前加入生成式AI聊天脚手架的数字游戏，学生会学得更好吗？ | [微信原文](https://mp.weixin.qq.com/s?__biz=MzIyMjE3NTMyNw%3D%3D&mid=2247502705&idx=1&sn=1751dd764528b0d837705f8514f786d0&chksm=e8330241df448b57287941caa9c55c3229d4c8d804f48b69e42a79f39bba27247f821dd53238) |
 | 2026-08-12 | 数字游戏学习 | 一颗会变色的球，能映照职场适应吗？Dynamic Self-Ball 的职业能力隐喻 | [微信原文](https://mp.weixin.qq.com/s?__biz=MzIyMjE3NTMyNw%3D%3D&mid=2247502696&idx=1&sn=dcc7074c7528f3374f03ed2f671558ae) |
 | 2026-08-08 | 桌面游戏 | 流量还是伦理？Follow Me 桌游如何把媒介与信息素养变成一场艰难选择 | [微信原文](https://mp.weixin.qq.com/s?__biz=MzIyMjE3NTMyNw%3D%3D&mid=2247502695&idx=1&sn=2551bdacdcf7d4acd79e4e10c869f9df&chksm=e8330257df448b41b47d4926cf81752e2da02c442e436330db11abb0eb5a9181ccfd6e1efde9) |
 | 2026-08-07 | 数字游戏学习 | 把认知评估放进手机半年：SMART-A 如何追踪阿尔茨海默病的细微变化？ | [微信原文](https://mp.weixin.qq.com/s?__biz=MzIyMjE3NTMyNw%3D%3D&mid=2247502694&idx=1&sn=75ba203889728837ed7583e9dd8e5e9e&chksm=e8330256df448b4049cf41e1803137995796a012c2013e06450ebc06564a8f2968247ac3fa3c) |

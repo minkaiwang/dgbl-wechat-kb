@@ -13,6 +13,8 @@ from build_index import collect_articles
 from kb_common import atomic_write_json, atomic_write_text, jsonl_load
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROFILE_SCREENSHOT_ALBUM_COUNT = 474
+PROFILE_SCREENSHOT_LABEL = "用户提供的主页截图（最新可见编号 482）"
 
 
 def write_csv(rows: list[dict], path: Path) -> None:
@@ -40,6 +42,30 @@ def issue_gaps(inventory: list[dict]) -> tuple[int, list[int]]:
 def duplicate_issue_numbers(inventory: list[dict]) -> list[int]:
     counts = Counter(int(row["issue_no"]) for row in inventory if row.get("issue_no") is not None)
     return sorted(issue for issue, count in counts.items() if count > 1)
+
+
+def profile_reconciliation(
+    *,
+    profile_original_count: int,
+    album_count_at_profile_snapshot: int,
+    current_album_count: int,
+    profile_snapshot_label: str,
+) -> dict:
+    if profile_original_count < album_count_at_profile_snapshot:
+        raise ValueError("profile count cannot be smaller than the concurrent album count")
+    if current_album_count < album_count_at_profile_snapshot:
+        raise ValueError("current album count cannot be smaller than the profile-snapshot baseline")
+    return {
+        "expected_original_count_from_profile_screenshot": profile_original_count,
+        "profile_snapshot_label": profile_snapshot_label,
+        "album_count_at_profile_snapshot": album_count_at_profile_snapshot,
+        "profile_to_album_gap": profile_original_count - album_count_at_profile_snapshot,
+        "album_inventory_count": current_album_count,
+        "album_items_added_since_profile_snapshot": (
+            current_album_count - album_count_at_profile_snapshot
+        ),
+        "current_profile_count_reverified": False,
+    }
 
 
 def consecutive_ranges(values: list[int]) -> list[tuple[int, int]]:
@@ -131,6 +157,12 @@ def run(args: argparse.Namespace) -> dict:
     ]
     duplicate_issues = duplicate_issue_numbers(inventory)
     unnumbered = [str(row["id"]) for row in inventory if row.get("issue_no") is None]
+    profile = profile_reconciliation(
+        profile_original_count=args.expected_original_count,
+        album_count_at_profile_snapshot=args.album_count_at_profile_snapshot,
+        current_album_count=len(inventory),
+        profile_snapshot_label=args.profile_snapshot_label,
+    )
     pending = [
         {
             "id": row["id"],
@@ -158,9 +190,7 @@ def run(args: argparse.Namespace) -> dict:
     state_ids = {str(row["id"]) for row in state}
 
     summary = {
-        "expected_original_count_from_profile_screenshot": args.expected_original_count,
-        "album_inventory_count": len(inventory),
-        "profile_to_album_gap": args.expected_original_count - len(inventory),
+        **profile,
         "maximum_numbered_issue": maximum_issue,
         "numbered_issue_gaps": gaps,
         "numbered_issue_gap_count": len(gaps),
@@ -218,9 +248,16 @@ def run(args: argparse.Namespace) -> dict:
     status_lines = [
         "# 知识库质量审计",
         "",
-        f"- 公众号主页截图显示原创内容：**{args.expected_original_count}** 篇。",
-        f"- 公开合集接口发现：**{len(inventory)}** 篇，位置连续 1–{len(inventory)}。",
-        f"- 两者相差：**{args.expected_original_count - len(inventory)}** 篇，列为待补录，不视为已完成。",
+        f"- {args.profile_snapshot_label}显示原创内容：**{args.expected_original_count}** 篇。",
+        (
+            f"- 同期公开合集基线：**{args.album_count_at_profile_snapshot}** 篇；历史差额："
+            f"**{profile['profile_to_album_gap']}** 篇。"
+        ),
+        (
+            f"- 当前公开合集接口发现：**{len(inventory)}** 篇，位置连续 1–{len(inventory)}；"
+            f"较截图同期新增 **{profile['album_items_added_since_profile_snapshot']}** 篇。"
+        ),
+        "- 主页原创数尚未在新增文章发布后重新截图，因此不计算异步的“当前主页数减当前合集数”。",
         f"- 合集最大编号：**{maximum_issue}**；编号序列缺口 **{len(gaps)}** 个："
         + ("、".join(map(str, gaps)) if gaps else "无"),
         "- 高度疑似一次性跳号的范围："
@@ -247,8 +284,9 @@ def run(args: argparse.Namespace) -> dict:
         "",
         (
             "主页总数、合集条目数和编号序列属于三个不同口径。356–364 更可能是一次编号跳号，"
-            "不能算作九篇缺文；主页比合集多出的 12 篇也不能与 12 个编号缺口直接对应。"
-            "当前可以确认 474 篇合集文章，完整性验收仍需公众号后台导出或人工清单核对。"
+            f"不能算作九篇缺文；截图同期的 {profile['profile_to_album_gap']} 篇差额也不能与编号缺口"
+            f"直接对应。当前可以确认 {len(inventory)} 篇合集文章；新增文章不会自动解释历史差额，"
+            "账号全量完整性仍需公众号后台导出或人工清单核对。"
         ),
         "",
         "文字与图片的公开许可仍待权利人确认。当前仓库适合本地构建和技术评审，不应直接把文章正文套用代码 MIT 许可证后公开。",
@@ -273,6 +311,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--inventory", type=Path, required=True)
     parser.add_argument("--public-root", type=Path, default=PROJECT_ROOT)
     parser.add_argument("--expected-original-count", type=int, default=486)
+    parser.add_argument(
+        "--album-count-at-profile-snapshot",
+        type=int,
+        default=PROFILE_SCREENSHOT_ALBUM_COUNT,
+        help="Album count observed concurrently with the profile screenshot",
+    )
+    parser.add_argument(
+        "--profile-snapshot-label",
+        default=PROFILE_SCREENSHOT_LABEL,
+        help="Human-readable provenance label for the profile count",
+    )
     parser.add_argument("--strict", action="store_true")
     return parser
 

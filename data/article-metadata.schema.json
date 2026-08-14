@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.1.0/data/article-metadata.schema.json",
+  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.1.1/data/article-metadata.schema.json",
   "title": "数字游戏学习研究公众号文章公开元数据",
   "description": "JSONL 文件中单条文章元数据记录的结构；不包含正文、摘要片段或图片。",
   "type": "object",

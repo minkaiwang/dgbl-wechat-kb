@@ -11,7 +11,7 @@ import yaml
 from kb_common import jsonl_load
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_ARTICLE_COUNT = 474
+EXPECTED_ARTICLE_COUNT = 475
 MAX_PUBLIC_FILE_BYTES = 20 * 1024 * 1024
 
 PUBLIC_METADATA_FIELDS = {
@@ -65,8 +65,8 @@ REQUIRED_RELEASE_FILES = {
     "docs/assets/readme-overview.svg",
     "docs/catalog-public.md",
     "docs/dataset.md",
-    "reports/public-release-v0.1.0.md",
-    "reports/release-notes-v0.1.0.md",
+    "reports/public-release-v0.1.1.md",
+    "reports/release-notes-v0.1.1.md",
     "scripts/build_release_assets.py",
 }
 

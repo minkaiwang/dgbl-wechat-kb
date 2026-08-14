@@ -1,8 +1,12 @@
 {
   "expected_original_count_from_profile_screenshot": 486,
-  "album_inventory_count": 474,
+  "profile_snapshot_label": "用户提供的主页截图（最新可见编号 482）",
+  "album_count_at_profile_snapshot": 474,
   "profile_to_album_gap": 12,
-  "maximum_numbered_issue": 482,
+  "album_inventory_count": 475,
+  "album_items_added_since_profile_snapshot": 1,
+  "current_profile_count_reverified": false,
+  "maximum_numbered_issue": 483,
   "numbered_issue_gaps": [
     3,
     94,
@@ -92,9 +96,9 @@
     "wx-2247502601-1"
   ],
   "import_status_counts": {
-    "imported": 474
+    "imported": 475
   },
-  "markdown_article_count": 474,
+  "markdown_article_count": 475,
   "duplicate_markdown_ids": [],
   "duplicate_source_urls": [],
   "remote_image_markdown_files": [],
@@ -103,6 +107,6 @@
   "state_without_inventory": [],
   "imported_state_to_markdown_difference": 0,
   "qa_review_count": 0,
-  "content_rights_pending_count": 474,
-  "asset_rights_pending_count": 474
+  "content_rights_pending_count": 475,
+  "asset_rights_pending_count": 475
 }

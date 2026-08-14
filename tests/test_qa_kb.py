@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from qa_kb import classify_issue_gaps
+import pytest
+from qa_kb import classify_issue_gaps, profile_reconciliation
 
 
 def test_classify_multi_issue_jump_separately_from_single_gaps() -> None:
@@ -20,3 +21,26 @@ def test_classify_multi_issue_jump_separately_from_single_gaps() -> None:
     assert result[1]["end"] == 364
     assert result[1]["preceding_position"] == 355
     assert result[1]["following_position"] == 356
+
+
+def test_profile_reconciliation_keeps_snapshot_gap_separate_from_new_album_items() -> None:
+    result = profile_reconciliation(
+        profile_original_count=486,
+        album_count_at_profile_snapshot=474,
+        current_album_count=475,
+        profile_snapshot_label="screenshot before issue 483",
+    )
+
+    assert result["profile_to_album_gap"] == 12
+    assert result["album_items_added_since_profile_snapshot"] == 1
+    assert result["current_profile_count_reverified"] is False
+
+
+def test_profile_reconciliation_rejects_inconsistent_baselines() -> None:
+    with pytest.raises(ValueError, match="concurrent album count"):
+        profile_reconciliation(
+            profile_original_count=473,
+            album_count_at_profile_snapshot=474,
+            current_album_count=475,
+            profile_snapshot_label="invalid",
+        )

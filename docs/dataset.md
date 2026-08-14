@@ -2,24 +2,25 @@
 
 ## 版本快照
 
-| 项目 | v0.1.0 |
+| 项目 | v0.1.1 |
 |---|---|
 | 数据对象 | “数字游戏学习研究”微信公众号公开帖子元数据 |
-| 记录数 | 474 |
-| 合集位置 | 1–474，连续 |
-| 发布时间 | 2024-07-11 至 2026-08-12 |
+| 记录数 | 475 |
+| 合集位置 | 1–475，连续 |
+| 发布时间 | 2024-07-11 至 2026-08-14 |
 | 数据许可 | CC BY 4.0 |
 | 正文与图片 | 不包含 |
 
-本数据集以公开合集为当前收录边界。公众号主页显示 486 篇原创内容，尚有 12 篇差额需要后台
-清单解释，因此 v0.1.0 不宣称覆盖账号全部原创文章。
+本数据集以公开合集为当前收录边界。用户提供的主页截图显示 486 篇原创内容，截图同期合集为
+474 篇，历史差额为 12 篇。编号 483 发布后合集增至 475 篇，但主页数尚未重新核验，因此
+v0.1.1 不宣称覆盖账号全部原创文章，也不把异步相减所得的 11 当作当前差额。
 
 ## 下载格式
 
-- `dgbl-wechat-metadata-v0.1.0.jsonl`：UTF-8，每行一个 JSON 对象；适合流式处理。
-- `dgbl-wechat-metadata-v0.1.0.csv`：UTF-8 with BOM；适合 Excel 直接打开。
-- `dgbl-wechat-metadata-v0.1.0.schema.json`：单条 JSONL 记录的 JSON Schema 2020-12。
-- `dgbl-wechat-metadata-v0.1.0.zip`：包含 JSONL、CSV、Schema、Manifest、许可和包内说明。
+- `dgbl-wechat-metadata-v0.1.1.jsonl`：UTF-8，每行一个 JSON 对象；适合流式处理。
+- `dgbl-wechat-metadata-v0.1.1.csv`：UTF-8 with BOM；适合 Excel 直接打开。
+- `dgbl-wechat-metadata-v0.1.1.schema.json`：单条 JSONL 记录的 JSON Schema 2020-12。
+- `dgbl-wechat-metadata-v0.1.1.zip`：包含 JSONL、CSV、Schema、Manifest、许可和包内说明。
 - `SHA256SUMS.txt`：以上四个数据资产的 SHA256 摘要。
 
 所有文件可从 [GitHub Releases](https://github.com/minkaiwang/dgbl-wechat-kb/releases) 下载。
@@ -48,8 +49,8 @@ Python 读取 CSV 时建议显式使用 `encoding="utf-8-sig"`，以自动处理
 
 ## 完整性与异常口径
 
-- 474 个合集位置连续，稳定 ID 与 `source_url` 均无重复。
-- 标题中的最大期号为 482；编号 3、94、435 尚待核对。
+- 475 个合集位置连续，稳定 ID 与 `source_url` 均无重复。
+- 标题中的最大期号为 483；编号 3、94、435 尚待核对。
 - 356–364 位于相邻合集位置之间，且发布时间仅相隔约 21.86 小时，暂记为高度疑似一次跳号。
 - 编号 246 对应两篇稳定 ID、URL 和正文均不同的帖子，不属于数据重复。
 - 3 篇特别篇或特殊篇没有数字期号，`issue_no` 为 `null`。
@@ -65,7 +66,7 @@ Python 读取 CSV 时建议显式使用 `encoding="utf-8-sig"`，以自动处理
 
 ## 署名建议
 
-> 数字游戏学习研究（2026）。数字游戏学习研究公众号公开元数据集（v0.1.0）。
+> 数字游戏学习研究（2026）。数字游戏学习研究公众号公开元数据集（v0.1.1）。
 > https://github.com/minkaiwang/dgbl-wechat-kb
 
 机器可读引用信息见仓库根目录

@@ -1,6 +1,6 @@
 [project]
 name = "dgbl-wechat-kb"
-version = "0.1.0"
+version = "0.1.1"
 description = "Auditable WeChat Official Account archive and knowledge base"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"

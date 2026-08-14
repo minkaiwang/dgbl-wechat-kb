@@ -4,14 +4,14 @@ title: 数字游戏学习研究 · 公众号公开元数据集
 type: dataset
 authors:
   - name: 数字游戏学习研究
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-08-14
 repository-code: https://github.com/minkaiwang/dgbl-wechat-kb
 url: https://github.com/minkaiwang/dgbl-wechat-kb
 license: CC-BY-4.0
 abstract: >-
   面向数字游戏学习、游戏化学习、教育元宇宙和桌面游戏研究的微信公众号公开帖子元数据集，
-  提供 474 条可追溯记录、可复现处理代码与质量审计材料，不包含文章正文或图片。
+  提供 475 条可追溯记录、可复现处理代码与质量审计材料，不包含文章正文或图片。
 keywords:
   - WeChat Official Account
   - knowledge base

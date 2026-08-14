@@ -6,6 +6,8 @@ import html
 import json
 import mimetypes
 import re
+import shutil
+import subprocess
 import time
 import unicodedata
 from datetime import UTC, datetime
@@ -28,6 +30,7 @@ from kb_common import (
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_IMAGE_HOST_SUFFIXES = (".qpic.cn", ".qlogo.cn", "mp.weixin.qq.com")
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
+MAX_ARTICLE_BYTES = 30 * 1024 * 1024
 DESKTOP_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
@@ -58,6 +61,49 @@ def fetch_bytes(client: httpx.Client, url: str, retries: int) -> bytes:
             if attempt < retries:
                 time.sleep(attempt * 2)
     raise ArticleImportError(f"下载失败（重试 {retries} 次）：{last_error}")
+
+
+def fetch_bytes_with_curl(url: str, *, timeout: float, retries: int) -> bytes:
+    parts = urlsplit(url)
+    if parts.scheme != "https" or parts.hostname != "mp.weixin.qq.com":
+        raise ArticleImportError(f"curl 回退拒绝非微信 HTTPS 地址：{url}")
+    executable = shutil.which("curl")
+    if not executable:
+        raise ArticleImportError("系统未安装 curl")
+    result = subprocess.run(
+        [
+            executable,
+            "-q",
+            "--fail",
+            "--silent",
+            "--show-error",
+            "--compressed",
+            "--proto",
+            "=https",
+            "--max-filesize",
+            str(MAX_ARTICLE_BYTES),
+            "--max-time",
+            str(max(1, int(timeout))),
+            "--retry",
+            str(max(0, retries - 1)),
+            "--user-agent",
+            DESKTOP_UA,
+            "--header",
+            "Accept-Language: zh-CN,zh;q=0.9",
+            "--referer",
+            "https://mp.weixin.qq.com/",
+            "--url",
+            url,
+        ],
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        error = result.stderr.decode("utf-8", errors="replace").strip()
+        raise ArticleImportError(f"curl 下载失败（退出码 {result.returncode}）：{error}")
+    if len(result.stdout) > MAX_ARTICLE_BYTES:
+        raise ArticleImportError(f"curl 返回内容超过 {MAX_ARTICLE_BYTES} 字节上限")
+    return result.stdout
 
 
 def is_article_html(payload: bytes) -> bool:
@@ -118,20 +164,32 @@ def fetch_article_page(
     row: dict,
     retries: int,
     use_sogou_fallback: bool,
+    use_curl_fallback: bool,
+    timeout: float,
 ) -> tuple[bytes, str]:
-    direct_error = ""
+    direct_errors: list[str] = []
+    source_url = canonical_wechat_url(str(row["source_url"]))
     try:
-        direct = fetch_bytes(client, canonical_wechat_url(str(row["source_url"])), retries)
+        direct = fetch_bytes(client, source_url, retries)
         if is_article_html(direct):
             return direct, "wechat_direct"
-        direct_error = "微信直链返回验证页"
+        direct_errors.append("httpx 直链返回验证页")
     except ArticleImportError as exc:
-        direct_error = str(exc)
+        direct_errors.append(str(exc))
+    if use_curl_fallback:
+        try:
+            curl_direct = fetch_bytes_with_curl(source_url, timeout=timeout, retries=retries)
+            if is_article_html(curl_direct):
+                return curl_direct, "curl_direct"
+            direct_errors.append("curl 直链返回验证页")
+        except ArticleImportError as exc:
+            direct_errors.append(str(exc))
     if not use_sogou_fallback:
-        raise ArticleImportError(direct_error or "微信直链未返回完整文章")
+        raise ArticleImportError("；".join(direct_errors) or "微信直链未返回完整文章")
     try:
         return resolve_sogou_article(client, str(row["title"]), retries), "sogou_signed_link"
     except ArticleImportError as exc:
+        direct_error = "；".join(direct_errors) or "微信直链未返回完整文章"
         raise ArticleImportError(f"{direct_error}；搜狗回退失败：{exc}") from exc
 
 
@@ -376,6 +434,8 @@ def import_one(
                 row,
                 args.retries,
                 args.sogou_fallback,
+                args.curl_fallback,
+                args.timeout,
             )
             raw_path.write_bytes(raw_bytes)
     else:
@@ -384,6 +444,8 @@ def import_one(
             row,
             args.retries,
             args.sogou_fallback,
+            args.curl_fallback,
+            args.timeout,
         )
         raw_path.parent.mkdir(parents=True, exist_ok=True)
         raw_path.write_bytes(raw_bytes)
@@ -541,6 +603,12 @@ def build_parser() -> argparse.ArgumentParser:
         action=argparse.BooleanOptionalAction,
         default=True,
         help="Resolve a public Sogou WeChat result if the direct URL returns a verification page",
+    )
+    parser.add_argument(
+        "--curl-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Use system curl for the same public WeChat URL before trying Sogou",
     )
     parser.add_argument("--skip-image-backup", action="store_true")
     parser.add_argument("--overwrite", action="store_true")

@@ -6,7 +6,7 @@
 - 账号主页：<https://github.com/minkaiwang>
 - 本机 GitHub CLI：已登录 `minkaiwang`，Git 协议为 HTTPS。
 - 仓库：`minkaiwang/dgbl-wechat-kb`，默认分支为 `main`。
-- 发布决策：用户已于 2026-08-14 明确授权把“代码 + 474 条安全元数据”版本推进为 Public。
+- 发布状态：v0.1.0 的“代码 + 474 条安全元数据”已公开；v0.1.1 的 475 条候选仍待发布确认。
 - 持续排除：文章正文、摘要片段、图片与私有归档；GitHub Pages 和全文发布不在本批次范围内。
 
 ## 建仓字段
@@ -15,7 +15,7 @@
 |---|---|
 | Owner | `minkaiwang` |
 | Repository name | `dgbl-wechat-kb` |
-| Description | `数字游戏学习研究公众号文章知识库：可追溯元数据、中文检索、质量审计与可复现导入流程。` |
+| Description | `数字游戏学习研究公众号公开元数据集：475条可追溯帖子记录、JSONL/CSV下载、质量审计与可复现处理流程。` |
 | Visibility | `Public`；仅公开通过门禁的代码与安全元数据 |
 | Initialize repository | 已从本地受审计工作树初始化 |
 | Default branch | `main` |
@@ -25,7 +25,7 @@
 
 建议 Topics：
 
-`wechat`、`knowledge-base`、`digital-game-based-learning`、`gamification`、`education`、`mkdocs`、`chinese-nlp`、`open-research`
+`wechat`、`knowledge-base`、`digital-game-based-learning`、`gamification`、`education`、`mkdocs`、`open-research`、`dataset`、`open-data`
 
 ## 分阶段发布
 
@@ -40,7 +40,7 @@
 
 暂不发布：
 
-- `docs/articles/` 的 474 篇正文；
+- `docs/articles/` 的 475 篇正文；
 - `data/articles.jsonl` 中含正文片段的 `preview`；
 - `docs/llms.txt` 中的正文摘要片段；
 - 原始 HTML、原图、接口快照、抓取日志与未审查素材。
@@ -52,7 +52,7 @@
 1. 公众号权利人确认正文许可；
 2. 客座作者或多人创作内容完成授权核对；
 3. 图片逐项明确为可再分发、替换、删除或仅保留原文链接；
-4. 主页 486 篇与合集 474 篇的口径完成对账；
+4. 主页截图同期 486 篇与合集 474 篇的历史差额完成后台对账；
 5. 测试、Ruff、严格站点构建和浏览器抽样复核通过。
 
 正文许可建议：若作者构成可确认且希望允许非商业传播，可选 `CC BY-NC 4.0`；若希望最大化复用，可选 `CC BY 4.0`；暂不能确认授权的文章保持原有权利状态，不放入公开全文包。图片许可必须单独处理。
@@ -66,4 +66,5 @@
 5. 用户已明确授权在 CI、完整历史和隐私门禁通过后将仓库改为 Public。
 
 v0.1.0 GitHub Release 已获后续明确授权，发布对象限定为公众号帖子公开元数据集。
-GitHub Pages 和任何全文发布仍作为后续独立动作处理。
+当前 v0.1.1 候选新增编号 483，总数为 475 条；推送、标签和 Release 仍需最终确认。
+GitHub Pages 和任何全文发布继续作为后续独立动作处理。

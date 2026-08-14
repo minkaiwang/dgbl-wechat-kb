@@ -10,7 +10,7 @@ from pathlib import Path
 from build_release_assets import build_release_assets
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_NAME = "dgbl-wechat-metadata-v0.1.0"
+BASE_NAME = "dgbl-wechat-metadata-v0.1.1"
 
 
 def digest(path: Path) -> str:
@@ -18,7 +18,7 @@ def digest(path: Path) -> str:
 
 
 def test_release_assets_are_complete_and_self_describing(tmp_path: Path) -> None:
-    result = build_release_assets(ROOT, tmp_path, requested_version="0.1.0")
+    result = build_release_assets(ROOT, tmp_path, requested_version="0.1.1")
     expected_names = {
         f"{BASE_NAME}.jsonl",
         f"{BASE_NAME}.csv",
@@ -27,19 +27,19 @@ def test_release_assets_are_complete_and_self_describing(tmp_path: Path) -> None
         "SHA256SUMS.txt",
     }
     assert {Path(path).name for path in result["assets"]} == expected_names
-    assert result["records"] == 474
+    assert result["records"] == 475
 
     jsonl_rows = [
         json.loads(line)
         for line in (tmp_path / f"{BASE_NAME}.jsonl").read_text(encoding="utf-8").splitlines()
     ]
-    assert len(jsonl_rows) == 474
+    assert len(jsonl_rows) == 475
     assert jsonl_rows[0]["position"] == 1
-    assert jsonl_rows[-1]["position"] == 474
+    assert jsonl_rows[-1]["position"] == 475
 
     csv_text = (tmp_path / f"{BASE_NAME}.csv").read_text(encoding="utf-8-sig")
     csv_rows = list(csv.DictReader(io.StringIO(csv_text)))
-    assert len(csv_rows) == 474
+    assert len(csv_rows) == 475
     assert csv_rows[0]["article_id"] == jsonl_rows[0]["article_id"]
 
     schema = json.loads((tmp_path / f"{BASE_NAME}.schema.json").read_text(encoding="utf-8"))
@@ -52,7 +52,7 @@ def test_release_assets_are_complete_and_self_describing(tmp_path: Path) -> None
         assert f"{BASE_NAME}/article-metadata.csv" in names
         assert f"{BASE_NAME}/MANIFEST.json" in names
         package_manifest = json.loads(archive.read(f"{BASE_NAME}/MANIFEST.json"))
-        assert package_manifest["record_count"] == 474
+        assert package_manifest["record_count"] == 475
         assert package_manifest["metadata_license"] == "CC-BY-4.0"
 
     checksum_lines = (tmp_path / "SHA256SUMS.txt").read_text(encoding="ascii").splitlines()
