@@ -1,0 +1,47 @@
+site_name: 数字游戏学习研究 · 知识库
+site_description: 数字游戏学习、游戏化学习、教育元宇宙与桌面游戏研究的公众号文章知识库
+site_author: Authors
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+strict: true
+
+nav:
+  - 首页: index.md
+  - 文章目录: catalog-public.md
+  - 构建与审计方法: methodology.md
+  - 标签: tags.md
+
+not_in_nav: |
+  articles/**
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - search.share
+  palette:
+    primary: blue grey
+    accent: amber
+
+plugins:
+  - search:
+      lang:
+        - zh
+        - en
+      jieba_dict_user: data/jieba-user-dict.txt
+  - tags:
+      listings: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true

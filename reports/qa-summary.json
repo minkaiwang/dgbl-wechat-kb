@@ -1,0 +1,108 @@
+{
+  "expected_original_count_from_profile_screenshot": 486,
+  "album_inventory_count": 474,
+  "profile_to_album_gap": 12,
+  "maximum_numbered_issue": 482,
+  "numbered_issue_gaps": [
+    3,
+    94,
+    356,
+    357,
+    358,
+    359,
+    360,
+    361,
+    362,
+    363,
+    364,
+    435
+  ],
+  "numbered_issue_gap_count": 12,
+  "issue_gap_classifications": [
+    {
+      "start": 3,
+      "end": 3,
+      "count": 1,
+      "preceding_issue": 2,
+      "following_issue": 4,
+      "preceding_position": 2,
+      "following_position": 3,
+      "elapsed_hours": 148.73,
+      "classification": "unresolved_number_gap"
+    },
+    {
+      "start": 94,
+      "end": 94,
+      "count": 1,
+      "preceding_issue": 93,
+      "following_issue": 95,
+      "preceding_position": 92,
+      "following_position": 93,
+      "elapsed_hours": 43.32,
+      "classification": "unresolved_number_gap"
+    },
+    {
+      "start": 356,
+      "end": 364,
+      "count": 9,
+      "preceding_issue": 355,
+      "following_issue": 365,
+      "preceding_position": 355,
+      "following_position": 356,
+      "elapsed_hours": 21.86,
+      "classification": "probable_numbering_jump"
+    },
+    {
+      "start": 435,
+      "end": 435,
+      "count": 1,
+      "preceding_issue": 434,
+      "following_issue": 436,
+      "preceding_position": 425,
+      "following_position": 426,
+      "elapsed_hours": 57.45,
+      "classification": "unresolved_number_gap"
+    }
+  ],
+  "probable_numbering_jump_ranges": [
+    {
+      "start": 356,
+      "end": 364,
+      "count": 9,
+      "preceding_issue": 355,
+      "following_issue": 365,
+      "preceding_position": 355,
+      "following_position": 356,
+      "elapsed_hours": 21.86,
+      "classification": "probable_numbering_jump"
+    }
+  ],
+  "unresolved_numbered_issues": [
+    3,
+    94,
+    435
+  ],
+  "unresolved_numbered_issue_count": 3,
+  "duplicate_numbered_issues": [
+    246
+  ],
+  "unnumbered_album_items": [
+    "wx-2247494425-1",
+    "wx-2247502293-1",
+    "wx-2247502601-1"
+  ],
+  "import_status_counts": {
+    "imported": 474
+  },
+  "markdown_article_count": 474,
+  "duplicate_markdown_ids": [],
+  "duplicate_source_urls": [],
+  "remote_image_markdown_files": [],
+  "dangerous_markup_files": [],
+  "inventory_without_state": [],
+  "state_without_inventory": [],
+  "imported_state_to_markdown_difference": 0,
+  "qa_review_count": 0,
+  "content_rights_pending_count": 474,
+  "asset_rights_pending_count": 474
+}

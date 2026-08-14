@@ -1,0 +1,4 @@
+interface:
+  display_name: "公众号知识库维护"
+  short_description: "维护公众号文章发现、导入、检索、质量审计与开源发布边界"
+  default_prompt: "Use $dgbl-kb to update, search, or audit the 数字游戏学习研究 article knowledge base."

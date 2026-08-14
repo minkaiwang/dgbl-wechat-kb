@@ -1,0 +1,30 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+site/
+output/
+.env
+.env.*
+secrets.*
+credentials.*
+cookies.*
+browser-profile/
+
+# 正文与正文衍生索引通过内容许可闸门后才进入 Git。
+docs/articles/
+docs/catalog.md
+docs/llms.txt
+data/articles.jsonl
+
+# 未完成素材许可审计前，不提交导入图片。
+docs/assets/images/pending/
+
+# 本地和编辑器文件
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
