@@ -40,7 +40,8 @@ v0.2.0 收录公开合集位置 1–475 的 475 篇 Markdown 正文，并提供�
 
 全部 7 个数据资产可用
 [SHA256SUMS.txt](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/SHA256SUMS.txt)
-核验完整性。仓库尚未发布 v0.2.0 前，上述链接会暂时返回 404。
+核验完整性。v0.2.0 的 8 个上传资产已完成匿名下载与逐文件 SHA256 复核，结果见
+[`reports/post-release-verification-v0.2.0.md`](reports/post-release-verification-v0.2.0.md)。
 
 ## 数据概览
 
@@ -123,6 +124,19 @@ scripts/                       导入、构建、搜索、QA 与 Release 工具
 公开合集 1–475，不声明覆盖账号后台的全部原创内容。编号 3、94、435 仍待后台清单核对，
 356–364 高度疑似一次性编号跳号。证据见
 [`reports/completeness-reconciliation.md`](reports/completeness-reconciliation.md)。
+
+## 持续更新计划
+
+“数字游戏学习研究”仍在持续发布内容。自 v0.2.0 的 475 篇基线起，我们计划每累计新增
+**25 篇经授权、通过审计且可公开的文章**，常规更新一次 GitHub 仓库与数据集 Release。
+
+| 当前基线 | 常规更新触发条件 | 下一批次目标 | 每批同步内容 |
+|---:|---:|---:|---|
+| 475 篇 | 累计新增 25 篇 | 500 篇 | 正文、元数据、索引、许可、QA、站点与 Release 数据包 |
+
+25 篇是常规发布节奏，不代表未来文章自动获得公开许可。每篇新增文章仍须完成来源、授权、隐私、
+图片占位符和内容质量检查；纠错、安全、隐私、撤稿或权利问题不等待批次，确认后及时处理。
+维护流程见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
 
 ## 复现与验证
 

@@ -28,3 +28,9 @@ Require all of the following before public release:
 4. Clear, replace, omit, or separately license every third-party image.
 5. Pass tests, Ruff, `mkdocs build --strict`, and a rendered sample review.
 6. Obtain explicit user confirmation before remote creation, push, Pages deployment, or visibility changes.
+
+## Maintenance cadence
+
+- Baseline: v0.2.0 with 475 publicly released articles.
+- Routine trigger: each 25 newly authorized, audited, publicly eligible articles; next target: 500.
+- The count does not grant rights or bypass QA. Handle corrections, security, privacy, retractions, and rights issues without waiting for the routine batch.

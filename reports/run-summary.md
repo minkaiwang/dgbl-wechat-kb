@@ -36,5 +36,7 @@
 
 ## 发布状态
 
-当前是已完成本地门禁的 v0.2.0 候选。用户已于 2026-08-15 明确确认正式发布；本摘要入库后
-执行远程 `main` 推送、`v0.2.0` 注释标签与 GitHub Release，并进行匿名下载复核。
+v0.2.0 已于 2026-08-15 正式公开发布；发布时 `main` 与注释标签 `v0.2.0` 均指向
+`f877962fc25b15456b7b087c3edc9fd2574f8c87`，该标签继续固定 Release 内容。8 个上传资产的匿名下载、字节数、SHA256、
+JSONL 记录数与 ZIP 条目数复核均通过；最终结果见
+[`post-release-verification-v0.2.0.md`](post-release-verification-v0.2.0.md)。
