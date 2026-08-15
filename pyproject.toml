@@ -1,7 +1,7 @@
 [project]
 name = "dgbl-wechat-kb"
-version = "0.1.1"
-description = "Auditable WeChat Official Account archive and knowledge base"
+version = "0.2.0"
+description = "Auditable full-text WeChat Official Account knowledge base"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 license = "MIT"
@@ -19,6 +19,7 @@ browser = [
   "camoufox[geoip]>=0.4,<1",
 ]
 test = [
+  "jsonschema>=4.25,<5",
   "pytest>=8,<10",
   "ruff>=0.12,<1",
 ]

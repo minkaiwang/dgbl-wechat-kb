@@ -11,7 +11,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def plain_text(markdown: str) -> str:
-    value = re.sub(r"```.*?```", " ", markdown, flags=re.DOTALL)
+    value = re.sub(r"<br\s*/?>", " ", markdown, flags=re.IGNORECASE)
+    value = re.sub(r"```.*?```", " ", value, flags=re.DOTALL)
     value = re.sub(r"!\[[^]]*]\([^)]*\)", " ", value)
     value = re.sub(r"\[([^]]+)]\([^)]*\)", r"\1", value)
     value = re.sub(r"^[#>*+\-]+\s*", "", value, flags=re.MULTILINE)
@@ -45,7 +46,10 @@ def collect_articles(public_root: Path) -> list[dict]:
                 "markdown_path": relative,
                 "text_chars": int(metadata.get("text_chars", len(text))),
                 "image_count": int(metadata.get("image_count", 0)),
+                "image_occurrence_count": int(metadata.get("image_occurrence_count", 0)),
                 "content_rights": metadata.get("content_rights", "pending_owner_review"),
+                "content_license_url": metadata.get("content_license_url", ""),
+                "licensor": metadata.get("licensor", ""),
                 "asset_rights": metadata.get("asset_rights", "pending_review"),
                 "qa_status": metadata.get("qa_status", "pending"),
                 "preview": text[:240],

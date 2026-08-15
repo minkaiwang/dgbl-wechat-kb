@@ -15,11 +15,7 @@ credentials.*
 cookies.*
 browser-profile/
 
-# 正文与正文衍生索引通过内容许可闸门后才进入 Git。
-docs/articles/
-docs/catalog.md
-docs/llms.txt
-data/articles.jsonl
+# 正文与正文衍生索引已通过 v0.2.0 内容许可闸门，纳入 Git。
 
 # 未完成素材许可审计前，不提交导入图片。
 docs/assets/images/pending/

@@ -15,9 +15,11 @@ PUBLIC_FIELDS = (
     "display_title",
     "series",
     "author",
+    "licensor",
     "published_at",
     "source_url",
     "content_rights",
+    "content_license_url",
     "asset_rights",
 )
 REQUIRED_FIELDS = ("article_id", "position", "title", "published_at", "source_url")
@@ -30,7 +32,7 @@ def public_metadata(row: dict) -> dict:
     source_url = str(row["source_url"])
     if not source_url.startswith("https://mp.weixin.qq.com/"):
         raise ValueError(f"unexpected source URL for {row['article_id']}: {source_url}")
-    return {"schema_version": 1, **{field: row.get(field) for field in PUBLIC_FIELDS}}
+    return {"schema_version": 2, **{field: row.get(field) for field in PUBLIC_FIELDS}}
 
 
 def build_public_metadata(input_path: Path, output_path: Path) -> list[dict]:
@@ -45,16 +47,18 @@ def public_catalog(rows: list[dict]) -> str:
     lines = [
         "# 公开文章目录",
         "",
-        f"当前收录 **{len(rows)}** 条文章元数据。首发版本只提供标题、日期、栏目和微信原文链接，不包含文章正文或图片。",
+        f"当前收录 **{len(rows)}** 篇文章全文与对应微信原文链接。公开 Markdown 不包含原图。",
         "",
-        "| 日期 | 栏目 | 文章 | 原文 |",
+        "| 日期 | 栏目 | 全文 | 原文 |",
         "|---|---|---|---|",
     ]
     for row in reversed(rows):
         title = str(row["display_title"] or row["title"]).replace("|", "\\|")
         series = str(row["series"] or "未分类").replace("|", "\\|")
+        year = str(row["published_at"])[:4]
+        local_path = f"articles/{year}/{int(row['position']):04d}-{row['article_id']}.md"
         lines.append(
-            f"| {str(row['published_at'])[:10]} | {series} | {title} | "
+            f"| {str(row['published_at'])[:10]} | {series} | [{title}]({local_path}) | "
             f"[微信原文]({row['source_url']}) |"
         )
     return "\n".join(lines) + "\n"
@@ -62,7 +66,7 @@ def public_catalog(rows: list[dict]) -> str:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Build a rights-safe metadata index without article text or excerpts"
+        description="Build a rights-safe metadata index and article catalog"
     )
     parser.add_argument("--input", type=Path, default=PROJECT_ROOT / "data" / "articles.jsonl")
     parser.add_argument(

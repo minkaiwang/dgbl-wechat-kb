@@ -103,10 +103,15 @@
   "duplicate_source_urls": [],
   "remote_image_markdown_files": [],
   "dangerous_markup_files": [],
+  "image_occurrence_mismatch_files": [],
+  "license_mismatches": [],
   "inventory_without_state": [],
   "state_without_inventory": [],
   "imported_state_to_markdown_difference": 0,
   "qa_review_count": 0,
-  "content_rights_pending_count": 475,
-  "asset_rights_pending_count": 475
+  "content_rights_authorized_count": 475,
+  "content_rights_pending_count": 0,
+  "asset_rights_pending_count": 475,
+  "unique_image_count": 7168,
+  "image_occurrence_count": 14334
 }

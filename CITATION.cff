@@ -1,21 +1,23 @@
 cff-version: 1.2.0
-message: 如果本数据集支持了你的研究，请引用以下元数据
-title: 数字游戏学习研究 · 公众号公开元数据集
+message: 如果本知识库支持了你的研究，请引用以下数据集
+title: 数字游戏学习研究 · 公众号全文知识库
 type: dataset
 authors:
-  - name: 数字游戏学习研究
-version: 0.1.1
+  - name: 靓点迷人
+version: 0.2.0
 date-released: 2026-08-15
 repository-code: https://github.com/minkaiwang/dgbl-wechat-kb
 url: https://github.com/minkaiwang/dgbl-wechat-kb
-license: CC-BY-4.0
+license: CC-BY-NC-4.0
 abstract: >-
-  面向数字游戏学习、游戏化学习、教育元宇宙和桌面游戏研究的微信公众号公开帖子元数据集，
-  提供 475 条可追溯记录、可复现处理代码与质量审计材料，不包含文章正文或图片。
+  面向数字游戏学习、游戏化学习、教育元宇宙和桌面游戏研究的微信公众号全文知识库，
+  提供 475 篇可追溯 Markdown 正文、结构化全文与元数据、可复现处理代码及质量审计材料；
+  原始图片与其他第三方素材不包含在公开数据中。
 keywords:
   - WeChat Official Account
   - knowledge base
   - digital game-based learning
   - gamification
   - education
+  - full text
   - open metadata

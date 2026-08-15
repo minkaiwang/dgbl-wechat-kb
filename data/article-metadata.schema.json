@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.1.1/data/article-metadata.schema.json",
+  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.2.0/data/article-metadata.schema.json",
   "title": "数字游戏学习研究公众号文章公开元数据",
   "description": "JSONL 文件中单条文章元数据记录的结构；不包含正文、摘要片段或图片。",
   "type": "object",
@@ -14,15 +14,17 @@
     "display_title",
     "series",
     "author",
+    "licensor",
     "published_at",
     "source_url",
     "content_rights",
+    "content_license_url",
     "asset_rights"
   ],
   "properties": {
     "schema_version": {
       "type": "integer",
-      "const": 1,
+      "const": 2,
       "description": "单条记录的结构版本。"
     },
     "article_id": {
@@ -54,8 +56,14 @@
       "description": "从标题前缀解析的原始栏目标签。"
     },
     "author": {
-      "type": ["string", "null"],
-      "description": "微信文章页面提供的作者字段。"
+      "type": "string",
+      "const": "靓点迷人",
+      "description": "微信文章页面提供的作者网名。"
+    },
+    "licensor": {
+      "type": "string",
+      "const": "靓点迷人",
+      "description": "当前全文快照的许可人署名；为公众号所有者公开使用的网名。"
     },
     "published_at": {
       "type": "string",
@@ -70,8 +78,13 @@
     },
     "content_rights": {
       "type": "string",
-      "const": "pending_owner_review",
-      "description": "对应文章正文的权利状态；不改变元数据本身的 CC BY 4.0 许可。"
+      "const": "CC-BY-NC-4.0",
+      "description": "对应文章原创文字的许可；元数据仍按 DATA-LICENSE.md 中的 CC BY 4.0 提供。"
+    },
+    "content_license_url": {
+      "type": "string",
+      "const": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "description": "文章原创文字所采用许可的规范链接。"
     },
     "asset_rights": {
       "type": "string",

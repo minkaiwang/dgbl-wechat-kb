@@ -15,6 +15,11 @@ from kb_common import atomic_write_json, atomic_write_text, jsonl_load
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROFILE_SCREENSHOT_ALBUM_COUNT = 474
 PROFILE_SCREENSHOT_LABEL = "用户提供的主页截图（最新可见编号 482）"
+AUTHORIZED_TEXT_LICENSE = "CC-BY-NC-4.0"
+AUTHORIZED_LICENSOR = "靓点迷人"
+IMAGE_PLACEHOLDER_RE = re.compile(
+    r"^\[图像 \d+：待版权审查，原图保存在私有归档\]$", re.MULTILINE
+)
 
 
 def write_csv(rows: list[dict], path: Path) -> None:
@@ -29,6 +34,19 @@ def write_csv(rows: list[dict], path: Path) -> None:
 def duplicates(values: list[str]) -> list[str]:
     counts = Counter(value for value in values if value)
     return sorted(value for value, count in counts.items() if count > 1)
+
+
+def article_license_errors(row: dict) -> list[str]:
+    errors: list[str] = []
+    if row.get("author") != AUTHORIZED_LICENSOR:
+        errors.append("author")
+    if row.get("licensor") != AUTHORIZED_LICENSOR:
+        errors.append("licensor")
+    if row.get("content_rights") != AUTHORIZED_TEXT_LICENSE:
+        errors.append("content_rights")
+    if row.get("asset_rights") != "pending_review":
+        errors.append("asset_rights")
+    return errors
 
 
 def issue_gaps(inventory: list[dict]) -> tuple[int, list[int]]:
@@ -177,6 +195,8 @@ def run(args: argparse.Namespace) -> dict:
     markdown_sources = [str(row["source_url"]) for row in articles]
     remote_images: list[str] = []
     dangerous_markup: list[str] = []
+    image_occurrence_mismatches: list[str] = []
+    license_mismatches: list[dict] = []
     for row in articles:
         text = (root / row["markdown_path"]).read_text(encoding="utf-8")
         if re.search(r"!\[[^]]*]\(https?://", text):
@@ -185,6 +205,14 @@ def run(args: argparse.Namespace) -> dict:
             r"<script\b|javascript:|\bon(?:error|load)\s*=|<iframe\b", text, re.IGNORECASE
         ):
             dangerous_markup.append(row["markdown_path"])
+        placeholder_count = len(IMAGE_PLACEHOLDER_RE.findall(text))
+        if placeholder_count != int(row.get("image_occurrence_count", 0)):
+            image_occurrence_mismatches.append(row["markdown_path"])
+        fields = article_license_errors(row)
+        if fields:
+            license_mismatches.append(
+                {"article_id": row["article_id"], "fields": fields}
+            )
 
     inventory_ids = {str(row["id"]) for row in inventory}
     state_ids = {str(row["id"]) for row in state}
@@ -206,15 +234,24 @@ def run(args: argparse.Namespace) -> dict:
         "duplicate_source_urls": duplicates(markdown_sources),
         "remote_image_markdown_files": remote_images,
         "dangerous_markup_files": dangerous_markup,
+        "image_occurrence_mismatch_files": image_occurrence_mismatches,
+        "license_mismatches": license_mismatches,
         "inventory_without_state": sorted(inventory_ids - state_ids),
         "state_without_inventory": sorted(state_ids - inventory_ids),
         "imported_state_to_markdown_difference": states.get("imported", 0) - len(articles),
         "qa_review_count": sum(1 for row in articles if row.get("qa_status") != "pass"),
+        "content_rights_authorized_count": sum(
+            1 for row in articles if row.get("content_rights") == AUTHORIZED_TEXT_LICENSE
+        ),
         "content_rights_pending_count": sum(
-            1 for row in articles if row.get("content_rights") != "cleared"
+            1 for row in articles if row.get("content_rights") != AUTHORIZED_TEXT_LICENSE
         ),
         "asset_rights_pending_count": sum(
             1 for row in articles if row.get("asset_rights") != "cleared"
+        ),
+        "unique_image_count": sum(int(row.get("image_count", 0)) for row in articles),
+        "image_occurrence_count": sum(
+            int(row.get("image_occurrence_count", 0)) for row in articles
         ),
     }
     atomic_write_json(root / "reports" / "qa-summary.json", summary)
@@ -224,9 +261,11 @@ def run(args: argparse.Namespace) -> dict:
             {
                 "article_id": row["article_id"],
                 "markdown_path": row["markdown_path"],
-                "image_count": row["image_count"],
+                "unique_image_count": row["image_count"],
+                "image_occurrence_count": row["image_occurrence_count"],
                 "asset_rights": row["asset_rights"],
-                "review_note": "逐图核对来源、许可与再分发条件",
+                "public_policy": "placeholders_only",
+                "review_note": "原图不公开；未来纳入前逐图核对来源、许可与再分发条件",
             }
             for row in articles
         ],
@@ -237,8 +276,11 @@ def run(args: argparse.Namespace) -> dict:
             {
                 "article_id": row["article_id"],
                 "markdown_path": row["markdown_path"],
+                "author": row["author"],
+                "licensor": row["licensor"],
                 "content_rights": row["content_rights"],
-                "review_note": "确认作者构成与公开许可后再发布全文",
+                "content_license_url": row["content_license_url"],
+                "review_note": "公众号所有者确认作者网名并选择 CC BY-NC 4.0",
             }
             for row in articles
         ],
@@ -279,6 +321,15 @@ def run(args: argparse.Namespace) -> dict:
         f"- 需人工复核的已导入文章：**{summary['qa_review_count']}** 篇。",
         f"- 公开 Markdown 中的远程图片链接：**{len(remote_images)}** 个文件。",
         f"- 危险内联标记命中：**{len(dangerous_markup)}** 个文件。",
+        (
+            f"- 正文许可：**{summary['content_rights_authorized_count']}** 篇为 CC BY-NC 4.0；"
+            f"许可字段异常 **{len(license_mismatches)}** 篇。"
+        ),
+        (
+            f"- 图片策略：**{summary['unique_image_count']}** 个文章级去重图像源、"
+            f"**{summary['image_occurrence_count']}** 个图像出现位置，公开原图 **0**；"
+            f"占位符计数异常 **{len(image_occurrence_mismatches)}** 篇。"
+        ),
         "",
         "## 结论",
         "",
@@ -289,7 +340,10 @@ def run(args: argparse.Namespace) -> dict:
             "账号全量完整性仍需公众号后台导出或人工清单核对。"
         ),
         "",
-        "文字与图片的公开许可仍待权利人确认。当前仓库适合本地构建和技术评审，不应直接把文章正文套用代码 MIT 许可证后公开。",
+        (
+            "公众号所有者已确认“靓点迷人”为作者网名，并将当前 475 篇原创文字按 "
+            "CC BY-NC 4.0 授权。图片及其他第三方素材仍保持原有权利状态，公开版只保留文字占位符。"
+        ),
     ]
     atomic_write_text(root / "reports" / "qa-summary.md", "\n".join(status_lines) + "\n")
     print(json.dumps(summary, ensure_ascii=False))
@@ -299,6 +353,8 @@ def run(args: argparse.Namespace) -> dict:
         or summary["duplicate_source_urls"]
         or remote_images
         or dangerous_markup
+        or image_occurrence_mismatches
+        or license_mismatches
         or summary["inventory_without_state"]
         or summary["state_without_inventory"]
         or summary["imported_state_to_markdown_difference"]

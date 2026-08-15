@@ -7,6 +7,7 @@ from kb_common import jsonl_load
 from validate_public_release import (
     EXPECTED_ARTICLE_COUNT,
     validate_catalog,
+    validate_content_license,
     validate_public_metadata,
 )
 
@@ -35,6 +36,20 @@ def test_nonconsecutive_positions_are_rejected() -> None:
     assert any("ordered consecutive range" in error for error in errors)
 
 
+def test_wrong_text_license_is_rejected() -> None:
+    rows = deepcopy(current_metadata())
+    rows[0]["content_rights"] = "pending_owner_review"
+    errors = validate_public_metadata(rows, EXPECTED_ARTICLE_COUNT)
+    assert any("unexpected content_rights" in error for error in errors)
+
+
 def test_current_public_catalog_has_one_link_per_row() -> None:
     catalog = (ROOT / "docs" / "catalog-public.md").read_text(encoding="utf-8")
     assert validate_catalog(catalog, EXPECTED_ARTICLE_COUNT) == []
+
+
+def test_current_content_license_matches_release_scope() -> None:
+    import json
+
+    value = json.loads((ROOT / "data" / "content-license.json").read_text(encoding="utf-8"))
+    assert validate_content_license(value, EXPECTED_ARTICLE_COUNT) == []

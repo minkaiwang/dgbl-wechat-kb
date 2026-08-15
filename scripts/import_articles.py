@@ -289,7 +289,7 @@ def backup_images(
     return manifest
 
 
-def prepare_content(content: Tag, image_mode: str) -> tuple[str, list[str], int]:
+def prepare_content(content: Tag, image_mode: str) -> tuple[str, list[str], int, int]:
     for comment in content.find_all(string=lambda value: isinstance(value, Comment)):
         comment.extract()
     for selector in ("script", "style", "noscript", ".qr_code_pc", ".reward_area"):
@@ -302,7 +302,8 @@ def prepare_content(content: Tag, image_mode: str) -> tuple[str, list[str], int]
 
     urls: list[str] = []
     seen: set[str] = set()
-    for image_number, img in enumerate(list(content.find_all("img")), start=1):
+    images = list(content.find_all("img"))
+    for image_number, img in enumerate(images, start=1):
         url = image_url(img)
         if url and url not in seen:
             seen.add(url)
@@ -327,7 +328,7 @@ def prepare_content(content: Tag, image_mode: str) -> tuple[str, list[str], int]
     markdown = markdown.replace("\u00a0", " ")
     markdown = re.sub(r"[ \t]+$", "", markdown, flags=re.MULTILINE)
     markdown = re.sub(r"\n{4,}", "\n\n\n", markdown).strip()
-    return markdown, urls, len(re.sub(r"\s+", "", raw_text))
+    return markdown, urls, len(re.sub(r"\s+", "", raw_text)), len(images)
 
 
 def soup_new_tag(node: Tag, name: str) -> Tag:
@@ -354,8 +355,8 @@ def build_article_markdown(metadata: dict, body_markdown: str) -> str:
     lines = [
         f"# {metadata['display_title']}",
         "",
-        f"> 公众号：{metadata['account_name']}  ",
-        f"> 发布时间：{metadata['published_at'][:10]}  ",
+        f"> 公众号：{metadata['account_name']}<br>",
+        f"> 发布时间：{metadata['published_at'][:10]}<br>",
         f"> [查看微信原文]({metadata['source_url']})",
         "",
         '!!! note "归档说明"',
@@ -383,6 +384,7 @@ def initial_state(inventory: list[dict], existing: list[dict]) -> dict[str, dict
                 "markdown_path": "",
                 "text_chars": 0,
                 "image_count": 0,
+                "image_occurrence_count": 0,
                 "error": "",
                 "updated_at": row.get("discovered_at", ""),
             },
@@ -453,7 +455,9 @@ def import_one(
     raw_html = raw_bytes.decode("utf-8", errors="replace")
     soup = BeautifulSoup(raw_html, "html.parser")
     fetched_title, fetched_account, fetched_author, content = extract_page(soup)
-    body_markdown, image_urls, text_chars = prepare_content(content, args.image_mode)
+    body_markdown, image_urls, text_chars, image_occurrence_count = prepare_content(
+        content, args.image_mode
+    )
     if text_chars < args.min_text_chars:
         raise ArticleImportError(
             f"正文仅 {text_chars} 个非空白字符，低于阈值 {args.min_text_chars}"
@@ -492,6 +496,7 @@ def import_one(
         "asset_rights": row.get("asset_rights", "pending_review"),
         "image_policy": args.image_mode,
         "image_count": len(image_urls),
+        "image_occurrence_count": image_occurrence_count,
         "text_chars": text_chars,
         "raw_sha256": sha256_bytes(raw_bytes),
         "fetch_method": fetch_method,
@@ -511,6 +516,7 @@ def import_one(
         "markdown_path": relative_path.as_posix(),
         "text_chars": text_chars,
         "image_count": len(image_urls),
+        "image_occurrence_count": image_occurrence_count,
         "archived_image_count": sum(
             1 for item in image_manifest if item.get("status") == "archived_private"
         ),

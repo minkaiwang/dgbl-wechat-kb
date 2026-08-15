@@ -48,7 +48,7 @@ jobs:
       - name: Validate public boundary and Git history
         run: uv run python scripts/validate_public_release.py --history
 
-      - name: Build metadata site strictly
+      - name: Build full-text knowledge site strictly
         env:
           NO_MKDOCS_2_WARNING: "true"
         run: uv run mkdocs build --strict

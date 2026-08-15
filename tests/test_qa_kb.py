@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from qa_kb import classify_issue_gaps, profile_reconciliation
+from qa_kb import article_license_errors, classify_issue_gaps, profile_reconciliation
 
 
 def test_classify_multi_issue_jump_separately_from_single_gaps() -> None:
@@ -44,3 +44,26 @@ def test_profile_reconciliation_rejects_inconsistent_baselines() -> None:
             current_album_count=475,
             profile_snapshot_label="invalid",
         )
+
+
+def test_article_license_errors_accept_authorized_text_and_pending_images() -> None:
+    assert (
+        article_license_errors(
+            {
+                "author": "靓点迷人",
+                "licensor": "靓点迷人",
+                "content_rights": "CC-BY-NC-4.0",
+                "asset_rights": "pending_review",
+            }
+        )
+        == []
+    )
+
+
+def test_article_license_errors_identifies_mismatched_fields() -> None:
+    assert article_license_errors({}) == [
+        "author",
+        "licensor",
+        "content_rights",
+        "asset_rights",
+    ]

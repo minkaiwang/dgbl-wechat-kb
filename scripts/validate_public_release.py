@@ -8,11 +8,19 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 import yaml
+from build_fulltext_dataset import (
+    EXPECTED_LICENSE_URL,
+    EXPECTED_LICENSOR,
+    EXPECTED_TEXT_LICENSE,
+    collect_fulltext,
+)
 from kb_common import jsonl_load
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_ARTICLE_COUNT = 475
 MAX_PUBLIC_FILE_BYTES = 20 * 1024 * 1024
+EXPECTED_ACCOUNT_NAME = "数字游戏学习研究"
+EXPECTED_RELEASE_VERSION = "0.2.0"
 
 PUBLIC_METADATA_FIELDS = {
     "schema_version",
@@ -23,9 +31,11 @@ PUBLIC_METADATA_FIELDS = {
     "display_title",
     "series",
     "author",
+    "licensor",
     "published_at",
     "source_url",
     "content_rights",
+    "content_license_url",
     "asset_rights",
 }
 REQUIRED_METADATA_FIELDS = {
@@ -33,18 +43,16 @@ REQUIRED_METADATA_FIELDS = {
     "article_id",
     "position",
     "title",
+    "author",
+    "licensor",
     "published_at",
     "source_url",
     "content_rights",
+    "content_license_url",
     "asset_rights",
 }
-FORBIDDEN_EXACT_PATHS = {
-    "data/articles.jsonl",
-    "docs/catalog.md",
-    "docs/llms.txt",
-}
+FORBIDDEN_EXACT_PATHS: set[str] = set()
 FORBIDDEN_PATH_PREFIXES = (
-    "docs/articles/",
     "docs/assets/images/pending/",
     "private-archive/",
 )
@@ -59,14 +67,25 @@ REQUIRED_RELEASE_FILES = {
     "README.md",
     "RIGHTS.md",
     "SECURITY.md",
+    "TEXT-LICENSE.md",
+    "data/article-fulltext.schema.json",
     "data/article-metadata.jsonl",
     "data/article-metadata.schema.json",
+    "data/articles.jsonl",
+    "data/content-license.json",
     "data/import-status.jsonl",
     "docs/assets/readme-overview.svg",
+    "docs/catalog.md",
     "docs/catalog-public.md",
     "docs/dataset.md",
-    "reports/public-release-v0.1.1.md",
-    "reports/release-notes-v0.1.1.md",
+    "docs/llms.txt",
+    "reports/fulltext-redactions.csv",
+    "reports/public-release-v0.2.0.md",
+    "reports/readme-svg-v0.2.0.md",
+    "reports/release-notes-v0.2.0.md",
+    "reports/text-authorization-v0.2.0.md",
+    "scripts/apply_text_license.py",
+    "scripts/build_fulltext_dataset.py",
     "scripts/build_release_assets.py",
 }
 
@@ -113,7 +132,10 @@ def text_findings(path: str, text: str) -> list[str]:
         findings.append("personal Windows user path")
     emails = set(re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", text))
     personal_emails = sorted(
-        email for email in emails if not email.lower().endswith("@users.noreply.github.com")
+        email
+        for email in emails
+        if not email.lower().endswith("@users.noreply.github.com")
+        and email.rsplit("@", 1)[-1].lower() not in {"example.com", "example.net", "example.org"}
     )
     if personal_emails:
         findings.append("email address: " + ", ".join(personal_emails))
@@ -156,6 +178,9 @@ def validate_public_metadata(rows: list[dict], expected_count: int) -> list[str]
         if extra:
             errors.append(f"row {number}: non-public fields {extra}")
 
+        if row.get("schema_version") != 2:
+            errors.append(f"row {number}: schema_version must be 2")
+
         article_id = str(row.get("article_id", ""))
         if not re.fullmatch(r"wx-\d+-\d+", article_id):
             errors.append(f"row {number}: invalid article_id {article_id!r}")
@@ -177,8 +202,14 @@ def validate_public_metadata(rows: list[dict], expected_count: int) -> list[str]
             errors.append(f"row {number}: source URL is missing a required WeChat field")
         urls.append(url)
 
-        if row.get("content_rights") != "pending_owner_review":
+        if row.get("author") != EXPECTED_LICENSOR:
+            errors.append(f"row {number}: unexpected author value")
+        if row.get("licensor") != EXPECTED_LICENSOR:
+            errors.append(f"row {number}: unexpected licensor value")
+        if row.get("content_rights") != EXPECTED_TEXT_LICENSE:
             errors.append(f"row {number}: unexpected content_rights value")
+        if row.get("content_license_url") != EXPECTED_LICENSE_URL:
+            errors.append(f"row {number}: unexpected content_license_url value")
         if row.get("asset_rights") != "pending_review":
             errors.append(f"row {number}: unexpected asset_rights value")
 
@@ -209,9 +240,101 @@ def validate_catalog(text: str, expected_count: int) -> list[str]:
     errors: list[str] = []
     if text.count("[微信原文](") != expected_count:
         errors.append("public catalog link count does not match expected metadata count")
-    for forbidden in ("docs/articles/", "data/articles.jsonl", "<script", "javascript:"):
+    if text.count("](articles/") != expected_count:
+        errors.append("public catalog full-text link count does not match expected metadata count")
+    for forbidden in ("<script", "javascript:"):
         if forbidden.lower() in text.lower():
             errors.append(f"public catalog contains forbidden content: {forbidden}")
+    return errors
+
+
+def validate_content_license(value: object, expected_count: int) -> list[str]:
+    if not isinstance(value, dict):
+        return ["content-license.json is not a JSON object"]
+    errors: list[str] = []
+    expected = {
+        "schema_version": 1,
+        "authorization_date": "2026-08-15",
+        "account_name": EXPECTED_ACCOUNT_NAME,
+        "licensor_credit": EXPECTED_LICENSOR,
+        "license": EXPECTED_TEXT_LICENSE,
+        "license_url": EXPECTED_LICENSE_URL,
+        "future_articles_default": "pending_owner_review",
+    }
+    for field, expected_value in expected.items():
+        if value.get(field) != expected_value:
+            errors.append(f"content-license.json has unexpected {field}")
+    scope = value.get("scope")
+    if not isinstance(scope, dict):
+        errors.append("content-license.json scope is not an object")
+        return errors
+    if scope.get("position_min") != 1 or scope.get("position_max") != expected_count:
+        errors.append("content-license.json position range does not match the release")
+    if scope.get("article_count") != expected_count:
+        errors.append("content-license.json article count does not match the release")
+    return errors
+
+
+def validate_fulltext_articles(
+    root: Path, metadata_rows: list[dict], expected_count: int, candidate_paths: list[str]
+) -> tuple[list[str], list[dict]]:
+    errors: list[str] = []
+    article_candidates = sorted(
+        path
+        for path in candidate_paths
+        if path.startswith("docs/articles/") and path.endswith(".md")
+    )
+    if len(article_candidates) != expected_count:
+        errors.append(
+            f"candidate article count is {len(article_candidates)}; expected {expected_count}"
+        )
+    try:
+        rows = collect_fulltext(root, expected_count)
+    except (KeyError, TypeError, ValueError) as exc:
+        return [*errors, f"full-text article validation failed: {exc}"], []
+
+    fulltext_paths = sorted(str(row["markdown_path"]) for row in rows)
+    if article_candidates != fulltext_paths:
+        errors.append("candidate article paths do not match the validated full-text records")
+    if len(metadata_rows) == len(rows):
+        comparable_fields = (
+            "article_id",
+            "position",
+            "title",
+            "author",
+            "licensor",
+            "published_at",
+            "source_url",
+            "content_rights",
+            "content_license_url",
+            "asset_rights",
+        )
+        for number, (metadata, article) in enumerate(zip(metadata_rows, rows, strict=True), start=1):
+            mismatched = [field for field in comparable_fields if metadata.get(field) != article.get(field)]
+            if mismatched:
+                errors.append(f"row {number}: metadata/full-text mismatch in {mismatched}")
+    return errors, rows
+
+
+def validate_derived_indexes(root: Path, article_rows: list[dict], expected_count: int) -> list[str]:
+    errors: list[str] = []
+    index_rows = jsonl_load(root / "data" / "articles.jsonl")
+    if len(index_rows) != expected_count:
+        errors.append(f"article index count is {len(index_rows)}; expected {expected_count}")
+    if {str(row.get("article_id")) for row in index_rows} != {
+        str(row.get("article_id")) for row in article_rows
+    }:
+        errors.append("article index IDs do not match full-text article IDs")
+
+    catalog = (root / "docs" / "catalog.md").read_text(encoding="utf-8")
+    if catalog.count("](articles/") != expected_count or catalog.count("[微信](") != expected_count:
+        errors.append("article catalog does not contain one local and source link per article")
+
+    llms = (root / "docs" / "llms.txt").read_text(encoding="utf-8")
+    if llms.count("- 本地: docs/articles/") != expected_count:
+        errors.append("llms index does not contain one local path per article")
+    if llms.count("- 原文: https://mp.weixin.qq.com/s?") != expected_count:
+        errors.append("llms index does not contain one source URL per article")
     return errors
 
 
@@ -225,6 +348,16 @@ def validate_citation(path: Path) -> list[str]:
             errors.append(f"CITATION.cff is missing {key}")
     if value.get("cff-version") != "1.2.0":
         errors.append("CITATION.cff must use cff-version 1.2.0")
+    if value.get("version") != EXPECTED_RELEASE_VERSION:
+        errors.append(f"CITATION.cff version must be {EXPECTED_RELEASE_VERSION}")
+    if value.get("license") != EXPECTED_TEXT_LICENSE:
+        errors.append(f"CITATION.cff license must be {EXPECTED_TEXT_LICENSE}")
+    authors = value.get("authors")
+    if not isinstance(authors, list) or not any(
+        isinstance(author, dict) and author.get("name") == EXPECTED_LICENSOR
+        for author in authors
+    ):
+        errors.append(f"CITATION.cff must credit {EXPECTED_LICENSOR}")
     return errors
 
 
@@ -285,6 +418,14 @@ def validate_release(root: Path, expected_count: int, check_history: bool) -> di
     errors.extend(
         validate_catalog((root / "docs" / "catalog-public.md").read_text(encoding="utf-8"), expected_count)
     )
+    license_value = json.loads((root / "data" / "content-license.json").read_text(encoding="utf-8"))
+    errors.extend(validate_content_license(license_value, expected_count))
+    article_errors, article_rows = validate_fulltext_articles(
+        root, metadata_rows, expected_count, paths
+    )
+    errors.extend(article_errors)
+    if article_rows:
+        errors.extend(validate_derived_indexes(root, article_rows, expected_count))
     errors.extend(validate_citation(root / "CITATION.cff"))
 
     history_blobs = 0
@@ -304,7 +445,7 @@ def validate_release(root: Path, expected_count: int, check_history: bool) -> di
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Validate the public metadata-only release boundary")
+    parser = argparse.ArgumentParser(description="Validate the public full-text release boundary")
     parser.add_argument("--root", type=Path, default=PROJECT_ROOT)
     parser.add_argument("--expected-count", type=int, default=EXPECTED_ARTICLE_COUNT)
     parser.add_argument("--history", action="store_true", help="scan every reachable Git blob")

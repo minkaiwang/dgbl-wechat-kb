@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.2.0/data/article-fulltext.schema.json",
+  "title": "数字游戏学习研究公众号文章全文记录",
+  "description": "v0.2.0 全文 JSONL 中单条记录的结构；图片只保留文字占位符。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "article_id",
+    "position",
+    "issue_no",
+    "title",
+    "display_title",
+    "series",
+    "tags",
+    "author",
+    "licensor",
+    "published_at",
+    "source_url",
+    "markdown_path",
+    "text_chars",
+    "image_count",
+    "image_occurrence_count",
+    "image_policy",
+    "content_rights",
+    "content_license_url",
+    "asset_rights",
+    "body_markdown"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "article_id": {
+      "type": "string",
+      "pattern": "^wx-[0-9]+-[0-9]+$"
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "issue_no": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_title": {
+      "type": ["string", "null"]
+    },
+    "series": {
+      "type": ["string", "null"]
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "author": {
+      "type": "string",
+      "const": "靓点迷人"
+    },
+    "licensor": {
+      "type": "string",
+      "const": "靓点迷人"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://mp\\.weixin\\.qq\\.com/s\\?"
+    },
+    "markdown_path": {
+      "type": "string",
+      "pattern": "^docs/articles/(?:2024|2025|2026)/[0-9]{4}-wx-[0-9]+-[0-9]+\\.md$"
+    },
+    "text_chars": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "image_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "文章内去重后的图像源数量；原图不进入公开数据。"
+    },
+    "image_occurrence_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "正文中的图像出现位置数量，对应文字占位符数量。"
+    },
+    "image_policy": {
+      "type": "string",
+      "const": "placeholder"
+    },
+    "content_rights": {
+      "type": "string",
+      "const": "CC-BY-NC-4.0"
+    },
+    "content_license_url": {
+      "type": "string",
+      "const": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "asset_rights": {
+      "type": "string",
+      "const": "pending_review"
+    },
+    "body_markdown": {
+      "type": "string",
+      "minLength": 100,
+      "description": "不含 YAML frontmatter 的文章 Markdown；图像以文字占位符表示。"
+    }
+  }
+}

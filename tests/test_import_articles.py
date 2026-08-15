@@ -24,11 +24,29 @@ def test_public_content_uses_image_placeholder() -> None:
         '<div id="js_content"><p>正文内容</p><img data-src="https://mmbiz.qpic.cn/a/0?wx_fmt=png"></div>',
         "html.parser",
     )
-    markdown, urls, text_chars = prepare_content(soup.select_one("#js_content"), "placeholder")
+    markdown, urls, text_chars, image_occurrence_count = prepare_content(
+        soup.select_one("#js_content"), "placeholder"
+    )
     assert "待版权审查" in markdown
     assert "mmbiz.qpic.cn" not in markdown
     assert urls == ["https://mmbiz.qpic.cn/a/0?wx_fmt=png"]
     assert text_chars > 0
+    assert image_occurrence_count == 1
+
+
+def test_image_count_distinguishes_unique_sources_from_occurrences() -> None:
+    soup = BeautifulSoup(
+        '<div id="js_content"><img data-src="https://mmbiz.qpic.cn/a/0?wx_fmt=png">'
+        '<img data-src="https://mmbiz.qpic.cn/a/0?wx_fmt=png"></div>',
+        "html.parser",
+    )
+    markdown, urls, _, image_occurrence_count = prepare_content(
+        soup.select_one("#js_content"), "placeholder"
+    )
+
+    assert len(urls) == 1
+    assert image_occurrence_count == 2
+    assert markdown.count("待版权审查") == 2
 
 
 def test_image_download_allow_list() -> None:
