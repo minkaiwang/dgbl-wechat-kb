@@ -1,24 +1,44 @@
 # v0.2.0：475 篇公众号文章全文知识库
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/minkaiwang/dgbl-wechat-kb/v0.2.0/docs/assets/readme-overview.svg" width="100%" alt="数字游戏学习研究公众号全文知识库 v0.2.0 概览">
+</p>
+
 v0.2.0 将“数字游戏学习研究”从公开元数据集升级为全文知识库。Release 的主体是公众号文章
 数据集，不是单独发布 skill。现有公开合集位置 1–475 的 475 篇原创文字由作者网名“靓点迷人”
 按 CC BY-NC 4.0 授权。
+
+> 一次下载即可获得可阅读的 Markdown 全文，也可直接使用 JSONL 构建 RAG、语义检索和主题分析。
+
+## 一眼看懂
+
+| 项目 | v0.2.0 |
+|---|---:|
+| Markdown 全文 | 475 篇 |
+| 发布时间范围 | 2024-07-11 至 2026-08-14 |
+| 全文 JSONL | 475 条 |
+| 图片处理 | 14,334 个文字占位符，公开原图 0 |
+| 正文许可 | CC BY-NC 4.0，署名“靓点迷人” |
 
 ## 下载
 
 ### 全文知识库
 
-- [全文 ZIP：475 篇 Markdown、JSONL、Schema、目录与许可](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.zip)
-- [全文 JSONL](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.jsonl)
-- [全文 JSON Schema](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.schema.json)
+| 文件 | 适合用途 | 下载 |
+|---|---|---|
+| 全文 ZIP | 475 篇 Markdown、JSONL、Schema、目录与许可 | [下载 ZIP](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.zip) |
+| 全文 JSONL | RAG、语义检索、主题分析 | [下载 JSONL](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.jsonl) |
+| 全文 Schema | 程序化字段校验 | [下载 Schema](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-fulltext-v0.2.0.schema.json) |
 
 ### 轻量元数据
 
-- [元数据 ZIP](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.zip)
-- [元数据 JSONL](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.jsonl)
-- [元数据 CSV（UTF-8 BOM）](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.csv)
-- [元数据 JSON Schema](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.schema.json)
-- [SHA256 校验和](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/SHA256SUMS.txt)
+| 文件 | 适合用途 | 下载 |
+|---|---|---|
+| 元数据 ZIP | 一次取得 JSONL、CSV、Schema 与许可 | [下载 ZIP](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.zip) |
+| 元数据 JSONL | 知识图谱、目录服务与程序处理 | [下载 JSONL](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.jsonl) |
+| 元数据 CSV | Excel、SPSS/R 前期整理与人工浏览 | [下载 CSV](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.csv) |
+| 元数据 Schema | 程序化字段校验 | [下载 Schema](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/dgbl-wechat-metadata-v0.2.0.schema.json) |
+| SHA256 | 核验全部 7 个数据资产 | [下载校验和](https://github.com/minkaiwang/dgbl-wechat-kb/releases/download/v0.2.0/SHA256SUMS.txt) |
 
 ## 本版内容
 

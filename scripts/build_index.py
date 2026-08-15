@@ -52,7 +52,7 @@ def collect_articles(public_root: Path) -> list[dict]:
                 "licensor": metadata.get("licensor", ""),
                 "asset_rights": metadata.get("asset_rights", "pending_review"),
                 "qa_status": metadata.get("qa_status", "pending"),
-                "preview": text[:240],
+                "preview": text[:240].rstrip(),
             }
         )
     rows.sort(key=lambda row: (row["published_at"], row["position"]), reverse=True)
@@ -95,7 +95,7 @@ def build_llms_index(rows: list[dict]) -> str:
                 f"- 栏目: {row['series']}",
                 f"- 本地: {row['markdown_path']}",
                 f"- 原文: {row['source_url']}",
-                f"- 摘要片段: {row['preview']}",
+                f"- 摘要片段: {str(row['preview']).rstrip()}",
                 "",
             ]
         )
